@@ -4,5 +4,5 @@
 ![alt](preview.png)  
 
 改进：自动判断网速所在行。  
-安装：install.sh  
-卸载：uninstall.sh  
+安装：终端 ./install.sh  
+卸载：终端 ./uninstall.sh  
