@@ -37,8 +37,7 @@ private slots:
     void updateCMDU();
 
 private:
-    long int i, db, ub, tt0, idle0;
-    int nl;
+    long i, db, ub, tt0, idle0;
     QPointer<CMDUWidget> m_centralWidget;
     QPointer<QLabel> m_tipsLabel;
     QTimer *m_refershTimer;

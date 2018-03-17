@@ -9,7 +9,7 @@ CMDUPlugin::CMDUPlugin(QObject *parent)
       m_tipsLabel(new QLabel),
       m_refershTimer(new QTimer(this))
 {
-    i=0, db=0, ub=0, tt0=0, idle0=0, nl=3;
+    i=0, db=0, ub=0, tt0=0, idle0=0;
 
     m_tipsLabel->setObjectName("cmdu");
     m_tipsLabel->setStyleSheet("color:white; padding:0px 3px;");
@@ -208,11 +208,16 @@ void CMDUPlugin::updateCMDU()
     file.setFileName("/proc/meminfo");
     file.open(QIODevice::ReadOnly);
     l = file.readLine();
-    long mt=l.mid(l.indexOf(":")+1,l.length()-13).replace(" ","").toInt();
+    long mt = l.replace("MemTotal:","").replace("kB","").replace(" ","").toLong();
     l = file.readLine();
+    long mf = l.replace("MemFree:","").replace("kB","").replace(" ","").toLong();
+    l = file.readLine();
+    l = file.readLine();
+    long mb = l.replace("Buffers:","").replace("kB","").replace(" ","").toLong();
+    l = file.readLine();
+    long mc = l.replace("Cached:","").replace("kB","").replace(" ","").toLong();
     file.close();
-    long mf = l.mid(l.indexOf(":")+1,l.length()-11).replace(" ","").toInt();
-    long mu = mt-mf;
+    long mu = mt - mf - mb -mc;
     QString musage = QString::number(mu*100/mt) + "%";
     QString mem = "内存: " + QString("%1/%2=%3").arg(KB(mu)).arg(KB(mt)).arg(musage);
 
@@ -224,7 +229,7 @@ void CMDUPlugin::updateCMDU()
     const char *ch;
     ch = ba.constData();
     char cpu[5];
-    long int user,nice,sys,idle,iowait,irq,softirq,tt;
+    long user,nice,sys,idle,iowait,irq,softirq,tt;
     sscanf(ch,"%s%ld%ld%ld%ld%ld%ld%ld",cpu,&user,&nice,&sys,&idle,&iowait,&irq,&softirq);
     tt = user + nice + sys + idle + iowait + irq + softirq;
     file.close();
