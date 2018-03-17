@@ -119,7 +119,7 @@ const QString CMDUPlugin::itemContextMenu(const QString &itemKey)
 
     QMap<QString, QVariant> changelog;
     changelog["itemId"] = "changelog";
-    changelog["itemText"] = "更新历史";
+    changelog["itemText"] = "更新日志";
     changelog["isActive"] = true;
     items.push_back(changelog);
 
@@ -150,14 +150,14 @@ void CMDUPlugin::invokedMenuItem(const QString &itemKey, const QString &menuId, 
 
 void CMDUPlugin::MBAbout()
 {
-    QMessageBox aboutMB(QMessageBox::NoIcon, "系统信息 3.0", "关于\n\n深度Linux系统上一款在任务栏显示网速，鼠标悬浮显示开机时间、CPU占用、内存占用、下载字节、上传字节的插件。\n作者：黄颖\nE-mail: sonichy@163.com\n源码：https://github.com/sonichy/CMDU_DDE_DOCK\n致谢：\nlinux028@deepin.org");
+    QMessageBox aboutMB(QMessageBox::NoIcon, "系统信息 3.1", "关于\n\n深度Linux系统上一款在任务栏显示网速，鼠标悬浮显示开机时间、CPU占用、内存占用、下载字节、上传字节的插件。\n作者：黄颖\nE-mail: sonichy@163.com\n源码：https://github.com/sonichy/CMDU_DDE_DOCK\n致谢：\nlinux028@deepin.org");
     aboutMB.setIconPixmap(QPixmap(":/icon.png"));
     aboutMB.exec();
 }
 
 void CMDUPlugin::MBChangeLog()
 {
-    QMessageBox changeLogMB(QMessageBox::NoIcon, "系统信息 3.0", "更新历史\n\n3.0 (2018-02-25)\n在新版本时间插件源码基础上修改，解决右键崩溃问题，并支持右键开关。\n\n2.4 (2017-11-11)\n增加开机时间。\n\n2.3 (2017-09-05)\n自动判断网速所在行。\n\n2.２ (2017-07-08)\n1.设置网速所在行。\n\n2.1 (2017-02-01)\n1.上传下载增加GB单位换算，且参数int改long，修复字节单位换算溢出BUG。\n\n2.0 (2016-12-07)\n1.增加右键菜单。\n\n1.0 (2016-11-01)\n1.把做好的Qt程序移植到DDE-DOCK。");
+    QMessageBox changeLogMB(QMessageBox::NoIcon, "系统信息 3.1", "更新日志\n\n3.1 (2018-03-17)\n修改空余内存计算范围。\n\n3.0 (2018-02-25)\n在新版本时间插件源码基础上修改，解决右键崩溃问题，并支持右键开关。\n\n2.4 (2017-11-11)\n增加开机时间。\n\n2.3 (2017-09-05)\n自动判断网速所在行。\n\n2.２ (2017-07-08)\n1.设置网速所在行。\n\n2.1 (2017-02-01)\n1.上传下载增加GB单位换算，且参数int改long，修复字节单位换算溢出BUG。\n\n2.0 (2016-12-07)\n1.增加右键菜单。\n\n1.0 (2016-11-01)\n1.把做好的Qt程序移植到DDE-DOCK。");
     changeLogMB.exec();
 }
 
