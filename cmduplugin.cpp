@@ -9,19 +9,14 @@ CMDUPlugin::CMDUPlugin(QObject *parent)
       m_tipsLabel(new QLabel),
       m_refershTimer(new QTimer(this))
 {
-    i=0, db=0, ub=0, tt0=0, idle0=0;
-
+    i=db=ub=dbt=ubt=dbt1=ubt1=dbt0=ubt0=0;
     m_tipsLabel->setObjectName("cmdu");
     m_tipsLabel->setStyleSheet("color:white; padding:0px 3px;");
-
     m_refershTimer->setInterval(1000);
     m_refershTimer->start();
-
     m_centralWidget = new CMDUWidget;
-
     connect(m_centralWidget, &CMDUWidget::requestContextMenu, [this] { m_proxyInter->requestContextMenu(this, QString()); });
     connect(m_centralWidget, &CMDUWidget::requestUpdateGeometry, [this] { m_proxyInter->itemUpdate(this, QString()); });
-
     connect(m_refershTimer, &QTimer::timeout, this, &CMDUPlugin::updateCMDU);
 
     // 开机时长
@@ -157,7 +152,7 @@ void CMDUPlugin::MBAbout()
 
 void CMDUPlugin::MBChangeLog()
 {
-    QMessageBox changeLogMB(QMessageBox::NoIcon, "系统信息 3.1", "更新日志\n\n3.1 (2018-03-17)\n修改空余内存计算范围。\n\n3.0 (2018-02-25)\n在新版本时间插件源码基础上修改，解决右键崩溃问题，并支持右键开关。\n\n2.4 (2017-11-11)\n增加开机时间。\n\n2.3 (2017-09-05)\n自动判断网速所在行。\n\n2.２ (2017-07-08)\n1.设置网速所在行。\n\n2.1 (2017-02-01)\n1.上传下载增加GB单位换算，且参数int改long，修复字节单位换算溢出BUG。\n\n2.0 (2016-12-07)\n1.增加右键菜单。\n\n1.0 (2016-11-01)\n1.把做好的Qt程序移植到DDE-DOCK。");
+    QMessageBox changeLogMB(QMessageBox::NoIcon, "系统信息 3.2", "更新日志\n\n3.2 (2018-05-08)\n网速全部计算，不会再出现为0的情况。\n\n3.1 (2018-03-17)\n修改空余内存计算范围。\n\n3.0 (2018-02-25)\n在新版本时间插件源码基础上修改，解决右键崩溃问题，并支持右键开关。\n\n2.4 (2017-11-11)\n增加开机时间。\n\n2.3 (2017-09-05)\n自动判断网速所在行。\n\n2.２ (2017-07-08)\n1.设置网速所在行。\n\n2.1 (2017-02-01)\n1.上传下载增加GB单位换算，且参数int改long，修复字节单位换算溢出BUG。\n\n2.0 (2016-12-07)\n1.增加右键菜单。\n\n1.0 (2016-11-01)\n1.把做好的Qt程序移植到DDE-DOCK。");
     changeLogMB.exec();
 }
 
@@ -197,6 +192,7 @@ QString CMDUPlugin::BS(long b)
 
 void CMDUPlugin::updateCMDU()
 {
+    // 开机
     QFile file("/proc/uptime");
     file.open(QIODevice::ReadOnly);
     QString l = file.readLine();
@@ -205,6 +201,7 @@ void CMDUPlugin::updateCMDU()
     t = t.addSecs(l.left(l.indexOf(".")).toInt());
     QString uptime = "开机: " + t.toString("hh:mm:ss");
 
+    //内存
     file.setFileName("/proc/meminfo");
     file.open(QIODevice::ReadOnly);
     l = file.readLine();
@@ -221,6 +218,7 @@ void CMDUPlugin::updateCMDU()
     QString musage = QString::number(mu*100/mt) + "%";
     QString mem = "内存: " + QString("%1/%2=%3").arg(KB(mu)).arg(KB(mt)).arg(musage);
 
+    // CPU
     file.setFileName("/proc/stat");
     file.open(QIODevice::ReadOnly);
     l = file.readLine();
@@ -238,28 +236,43 @@ void CMDUPlugin::updateCMDU()
     idle0 = idle;
     tt0 = tt;
 
+    // 网速
     file.setFileName("/proc/net/dev");
     file.open(QIODevice::ReadOnly);
     l = file.readLine();
     l = file.readLine();
-    l = file.readLine();
-    if(l.contains("lo",Qt::CaseInsensitive)) l = file.readLine();
+    dbt1=ubt1=0;
+    while(!file.atEnd()){
+        l = file.readLine();
+        //if(l.contains("lo",Qt::CaseInsensitive))l = file.readLine();
+        QStringList list = l.split(QRegExp("\\s{1,}"));
+        db = list.at(1).toLong();
+        ub = list.at(9).toLong();
+        dbt1 += db;
+        ubt1 += ub;
+    }
     file.close();
-    QStringList list = l.split(QRegExp("\\s{1,}")); // 第一个\表示转义字符，\s表示空格，｛1，｝表示一个以上
     QString dss = "";
     QString uss = "";
-    if(i>0){
-        long ds = list.at(1).toLong() - db;
-        long us = list.at(9).toLong() - ub;
-        dss = BS(ds)+"/s";
-        uss = BS(us)+"/s";
+    if(i > 0){
+        long ds = dbt1 - dbt0;
+        long us = ubt1 - ubt0;
+        dbt = dbt0 + ds;
+        ubt = ubt0 + us;
+        dss = BS(ds) + "/s";
+        uss = BS(us) + "/s";
+        dbt0 = dbt1;
+        ubt0 = ubt1;
     }
-    db = list.at(1).toLong();
-    ub = list.at(9).toLong();
-    QString net = "下载: " + BS(db) + "  " + dss + "\n上传: " + BS(ub) + "  " + uss;
+    QString netspeed = "↑ " + uss + "\n↓ " + dss;
+    QString net = "上传: " + BS(ubt) + "  " + uss + "\n下载: " + BS(dbt) + "  " + dss;
 
+    i++;
+    if(i>2)i=2;
+
+    // 绘制
     m_tipsLabel->setText(uptime + "\n" + cusage + "\n" + mem + "\n" + net);
-    m_centralWidget->text = "↑" + uss + "\n↓" + dss;
+    m_centralWidget->text = netspeed;
     m_centralWidget->update();
-    i++;    
+
 }
