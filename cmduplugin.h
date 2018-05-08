@@ -44,6 +44,7 @@ private:
     QString m_currentTimeString;
     QString KB(long k);
     QString BS(long b);
+    QString startup;
     QLabel *labelStartupDuration;
     void MBAbout();
     void MBChangeLog();

@@ -26,20 +26,8 @@ CMDUPlugin::CMDUPlugin(QObject *parent)
     QString PO = process->readAllStandardOutput();
     QStringList SLSA = PO.split(" = ");
     QString SD = SLSA.at(1);
-    if(SD.contains("min"))SD.replace("min","分");
-    labelStartupDuration = new QLabel;
-    labelStartupDuration->setText(SD.mid(0,SD.indexOf(".")) + "秒");
-    labelStartupDuration->setFixedSize(QSize(200,150));
-    labelStartupDuration->setWindowFlags(Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
-    QFont font;
-    font.setPointSize(30);
-    labelStartupDuration->setFont(font);
-    labelStartupDuration->setAlignment(Qt::AlignCenter);
-    labelStartupDuration->setStyleSheet("QLabel { padding:2px; color:white; background-color:#00FF00;}");
-    labelStartupDuration->adjustSize();
-    labelStartupDuration->move(QApplication::desktop()->width()-labelStartupDuration->width()-10, QApplication::desktop()->height()-labelStartupDuration->height()-50);
-    labelStartupDuration->show();
-    QTimer::singleShot(5000, labelStartupDuration, SLOT(hide()));
+    if(SD.contains("min"))SD.replace("min"," 分");
+    startup = "启动: " + SD.mid(0,SD.indexOf(".")) + " 秒";
 }
 
 const QString CMDUPlugin::pluginName() const
@@ -94,8 +82,6 @@ QWidget *CMDUPlugin::itemTipsWidget(const QString &itemKey)
 const QString CMDUPlugin::itemCommand(const QString &itemKey)
 {
     Q_UNUSED(itemKey);
-    labelStartupDuration->show();
-    QTimer::singleShot(5000, labelStartupDuration, SLOT(hide()));
     return "";
 }
 
@@ -152,7 +138,7 @@ void CMDUPlugin::MBAbout()
 
 void CMDUPlugin::MBChangeLog()
 {
-    QMessageBox changeLogMB(QMessageBox::NoIcon, "系统信息 3.2", "更新日志\n\n3.2 (2018-05-08)\n网速全部计算，不会再出现为0的情况。\n\n3.1 (2018-03-17)\n修改空余内存计算范围。\n\n3.0 (2018-02-25)\n在新版本时间插件源码基础上修改，解决右键崩溃问题，并支持右键开关。\n\n2.4 (2017-11-11)\n增加开机时间。\n\n2.3 (2017-09-05)\n自动判断网速所在行。\n\n2.２ (2017-07-08)\n1.设置网速所在行。\n\n2.1 (2017-02-01)\n1.上传下载增加GB单位换算，且参数int改long，修复字节单位换算溢出BUG。\n\n2.0 (2016-12-07)\n1.增加右键菜单。\n\n1.0 (2016-11-01)\n1.把做好的Qt程序移植到DDE-DOCK。");
+    QMessageBox changeLogMB(QMessageBox::NoIcon, "系统信息 3.2", "更新日志\n\n3.2 (2018-05-08)\n网速全部计算，不会再出现为0的情况。\n取消启动时间浮窗。\n\n3.1 (2018-03-17)\n修改空余内存计算范围。\n\n3.0 (2018-02-25)\n在新版本时间插件源码基础上修改，解决右键崩溃问题，并支持右键开关。\n\n2.4 (2017-11-11)\n增加开机时间。\n\n2.3 (2017-09-05)\n自动判断网速所在行。\n\n2.２ (2017-07-08)\n1.设置网速所在行。\n\n2.1 (2017-02-01)\n1.上传下载增加GB单位换算，且参数int改long，修复字节单位换算溢出BUG。\n\n2.0 (2016-12-07)\n1.增加右键菜单。\n\n1.0 (2016-11-01)\n1.把做好的Qt程序移植到DDE-DOCK。");
     changeLogMB.exec();
 }
 
@@ -271,7 +257,7 @@ void CMDUPlugin::updateCMDU()
     if(i>2)i=2;
 
     // 绘制
-    m_tipsLabel->setText(uptime + "\n" + cusage + "\n" + mem + "\n" + net);
+    m_tipsLabel->setText(startup + "\n" + uptime + "\n" + cusage + "\n" + mem + "\n" + net);
     m_centralWidget->text = netspeed;
     m_centralWidget->update();
 
