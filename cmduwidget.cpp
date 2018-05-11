@@ -28,7 +28,7 @@ void CMDUWidget::setEnabled(const bool b)
 QSize CMDUWidget::sizeHint() const
 {
     QFontMetrics FM(qApp->font());
-    return FM.boundingRect("↑000.00KB/s  ").size();
+    return FM.boundingRect("↑000.00KB/s  ").size() + QSize(0,FM.boundingRect("↓000.00KB/s  ").height());
 }
 
 void CMDUWidget::resizeEvent(QResizeEvent *e)
