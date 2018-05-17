@@ -13,6 +13,7 @@ CMDUWidget::CMDUWidget(QWidget *parent)
     m_settings("deepin", "dde-dock-cmdu")
 {
     text = "↑0.00B/s\n↓0.00B/s";
+    mp = 0;
 }
 
 bool CMDUWidget::enabled()
@@ -41,6 +42,10 @@ void CMDUWidget::paintEvent(QPaintEvent *e)
     Q_UNUSED(e);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
+    if(mp>90){
+        painter.setBrush(Qt::red);
+        painter.drawRect(rect());
+    }
     painter.setPen(Qt::white);
     painter.drawText(rect(), Qt::AlignLeft | Qt::AlignVCenter, text);
 }
