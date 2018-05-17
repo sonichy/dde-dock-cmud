@@ -24,10 +24,14 @@ CMDUPlugin::CMDUPlugin(QObject *parent)
     process->start("systemd-analyze");
     process->waitForFinished();
     QString PO = process->readAllStandardOutput();
-    QStringList SLSA = PO.split(" = ");
-    QString SD = SLSA.at(1);
-    if(SD.contains("min"))SD.replace("min"," 分");
-    startup = "启动: " + SD.mid(0,SD.indexOf(".")) + " 秒";
+    //QStringList SLSA = PO.split(" = ");
+    //QString SD = SLSA.at(1);
+    QString SD = PO.right(PO.length() - PO.indexOf("=") - 1);
+    SD.replace("\n","");
+    SD.replace("min"," 分");
+    SD.replace("ms"," 毫秒");
+    SD.replace("s"," 秒");
+    startup = "启动: " + SD;
 }
 
 const QString CMDUPlugin::pluginName() const
