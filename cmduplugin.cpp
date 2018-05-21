@@ -26,8 +26,9 @@ CMDUPlugin::CMDUPlugin(QObject *parent)
     QString PO = process->readAllStandardOutput();
     //QStringList SLSA = PO.split(" = ");
     //QString SD = SLSA.at(1);
-    QString SD = PO.right(PO.length() - PO.indexOf("=") - 1);
-    SD.replace("\n","");
+    //QString SD = PO.right(PO.length() - PO.indexOf("=") - 1);
+    QString SD = PO.mid(PO.indexOf("=") + 1, PO.indexOf("\n") - PO.indexOf("=") - 1);
+    //SD.replace("\n","");
     SD.replace("min"," 分");
     SD.replace("ms"," 毫秒");
     SD.replace("s"," 秒");
