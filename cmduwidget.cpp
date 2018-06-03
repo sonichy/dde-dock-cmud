@@ -1,5 +1,5 @@
 #include "cmduwidget.h"
-#include "constants.h"
+#include "dde-dock/constants.h"
 #include <QApplication>
 #include <QPainter>
 #include <QDebug>
@@ -42,7 +42,7 @@ void CMDUWidget::paintEvent(QPaintEvent *e)
     Q_UNUSED(e);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    if(mp>=90){
+    if(mp >= 90){
         painter.setBrush(Qt::red);
         painter.drawRect(rect());
     }

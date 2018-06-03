@@ -1,7 +1,7 @@
 #ifndef CMDUPlugin_H
 #define CMDUPlugin_H
 
-#include "pluginsiteminterface.h"
+#include "dde-dock/pluginsiteminterface.h"
 #include "cmduwidget.h"
 #include <QTimer>
 #include <QLabel>
@@ -23,7 +23,8 @@ public:
     bool pluginIsAllowDisable() override { return true; }
     bool pluginIsDisable() override;
 
-    int itemSortKey(const QString &itemKey) override;
+    int itemSortKey(const QString &itemKey);
+    void setSortKey(const QString &itemKey, const int order);
 
     QWidget *itemWidget(const QString &itemKey) override;
     QWidget *itemTipsWidget(const QString &itemKey) override;
@@ -41,7 +42,8 @@ private:
     QPointer<CMDUWidget> m_centralWidget;
     QPointer<QLabel> m_tipsLabel;
     QTimer *m_refershTimer;
-    QString m_currentTimeString;
+    QSettings m_settings;
+    //QString m_currentTimeString;
     QString KB(long k);
     QString BS(long b);
     QString startup;

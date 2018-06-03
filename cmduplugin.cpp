@@ -3,11 +3,16 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QMessageBox>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QTextBrowser>
+#include <QPushButton>
 
 CMDUPlugin::CMDUPlugin(QObject *parent)
     : QObject(parent),
       m_tipsLabel(new QLabel),
-      m_refershTimer(new QTimer(this))
+      m_refershTimer(new QTimer(this)),
+      m_settings("deepin", "dde-dock-cmdu")
 {
     i=db=ub=dbt=ubt=dbt1=ubt1=dbt0=ubt0=0;
     m_tipsLabel->setObjectName("cmdu");
@@ -24,11 +29,7 @@ CMDUPlugin::CMDUPlugin(QObject *parent)
     process->start("systemd-analyze");
     process->waitForFinished();
     QString PO = process->readAllStandardOutput();
-    //QStringList SLSA = PO.split(" = ");
-    //QString SD = SLSA.at(1);
-    //QString SD = PO.right(PO.length() - PO.indexOf("=") - 1);
     QString SD = PO.mid(PO.indexOf("=") + 1, PO.indexOf("\n") - PO.indexOf("=") - 1);
-    //SD.replace("\n","");
     SD.replace("min"," 分");
     SD.replace("ms"," 毫秒");
     SD.replace("s"," 秒");
@@ -69,7 +70,17 @@ bool CMDUPlugin::pluginIsDisable()
 int CMDUPlugin::itemSortKey(const QString &itemKey)
 {
     Q_UNUSED(itemKey);
-    return -1;
+
+    const QString key = QString("pos_%1").arg(displayMode());
+    return m_settings.value(key, 0).toInt();
+}
+
+void CMDUPlugin::setSortKey(const QString &itemKey, const int order)
+{
+    Q_UNUSED(itemKey);
+
+    const QString key = QString("pos_%1").arg(displayMode());
+    m_settings.setValue(key, order);
 }
 
 QWidget *CMDUPlugin::itemWidget(const QString &itemKey)
@@ -136,15 +147,34 @@ void CMDUPlugin::invokedMenuItem(const QString &itemKey, const QString &menuId, 
 
 void CMDUPlugin::MBAbout()
 {
-    QMessageBox aboutMB(QMessageBox::NoIcon, "系统信息 3.3", "关于\n\n深度Linux系统上一款在任务栏显示网速，鼠标悬浮显示开机时间、CPU占用、内存占用、下载字节、上传字节的插件。\n作者：黄颖\nE-mail: sonichy@163.com\n源码：https://github.com/sonichy/CMDU_DDE_DOCK\n致谢：\nlinux028@deepin.org");
+    QMessageBox aboutMB(QMessageBox::NoIcon, "系统信息 3.4", "关于\n\n深度Linux系统上一款在任务栏显示网速，鼠标悬浮显示开机时间、CPU占用、内存占用、下载字节、上传字节的插件。\n作者：黄颖\nE-mail: sonichy@163.com\n源码：https://github.com/sonichy/CMDU_DDE_DOCK\n致谢：\nlinux028@deepin.org");
     aboutMB.setIconPixmap(QPixmap(":/icon.png"));
     aboutMB.exec();
 }
 
 void CMDUPlugin::MBChangeLog()
 {
-    QMessageBox changeLogMB(QMessageBox::NoIcon, "系统信息 3.3", "更新日志\n\n3.3 (2018-05-17)\n1.内存超过90%变红预警。\n2.网速小于 999 字节显示为 0.00 KB\n3.使用安全的 QString.right() 替代 QStringList.at()，增加：ms 替换为 毫秒。\n\n3.2 (2018-05-08)\n网速全部计算，不会再出现为0的情况。\n取消启动时间浮窗。\n\n3.1 (2018-03-17)\n修改空余内存计算范围。\n\n3.0 (2018-02-25)\n在新版本时间插件源码基础上修改，解决右键崩溃问题，并支持右键开关。\n\n2.4 (2017-11-11)\n增加开机时间。\n\n2.3 (2017-09-05)\n自动判断网速所在行。\n\n2.２ (2017-07-08)\n1.设置网速所在行。\n\n2.1 (2017-02-01)\n1.上传下载增加GB单位换算，且参数int改long，修复字节单位换算溢出BUG。\n\n2.0 (2016-12-07)\n1.增加右键菜单。\n\n1.0 (2016-11-01)\n1.把做好的Qt程序移植到DDE-DOCK。");
-    changeLogMB.exec();
+    QString s = "更新日志\n\n3.4 (2018-06-03)\n1.支持新版dock的排序功能。\n\n3.3 (2018-05-17)\n1.内存超过90%变红预警。\n2.网速小于 999 字节显示为 0.00 KB\n3.使用安全的 QString.right() 替代 QStringList.at()，增加：ms 替换为 毫秒。\n\n3.2 (2018-05-08)\n网速全部计算，不会再出现为0的情况。\n取消启动时间浮窗。\n\n3.1 (2018-03-17)\n修改空余内存计算范围。\n\n3.0 (2018-02-25)\n在新版本时间插件源码基础上修改，解决右键崩溃问题，并支持右键开关。\n\n2.4 (2017-11-11)\n增加开机时间。\n\n2.3 (2017-09-05)\n自动判断网速所在行。\n\n2.２ (2017-07-08)\n1.设置网速所在行。\n\n2.1 (2017-02-01)\n1.上传下载增加GB单位换算，且参数int改long，修复字节单位换算溢出BUG。\n\n2.0 (2016-12-07)\n1.增加右键菜单。\n\n1.0 (2016-11-01)\n1.把做好的Qt程序移植到DDE-DOCK。";
+    QDialog *dialog = new QDialog;
+    dialog->setWindowTitle("系统信息");
+    dialog->setFixedSize(400,300);
+    QVBoxLayout *vbox = new QVBoxLayout;
+    QTextBrowser *textBrowser = new QTextBrowser;
+    textBrowser->setText(s);
+    textBrowser->zoomIn();
+    vbox->addWidget(textBrowser);
+    QHBoxLayout *hbox = new QHBoxLayout;
+    QPushButton *pushbutton_confirm = new QPushButton("确定");
+    hbox->addStretch();
+    hbox->addWidget(pushbutton_confirm);
+    hbox->addStretch();
+    vbox->addLayout(hbox);
+    dialog->setLayout(vbox);
+    dialog->show();
+    connect(pushbutton_confirm, SIGNAL(clicked()), dialog, SLOT(accept()));
+    if(dialog->exec() == QDialog::Accepted){
+        dialog->close();
+    }
 }
 
 QString CMDUPlugin::KB(long k)
@@ -197,16 +227,12 @@ void CMDUPlugin::updateCMDU()
     file.open(QIODevice::ReadOnly);
     l = file.readLine();
     long mt = l.replace("MemTotal:","").replace("kB","").replace(" ","").toLong();
-    l = file.readLine();
-    //long mf = l.replace("MemFree:","").replace("kB","").replace(" ","").toLong();
+    l = file.readLine();    
     l = file.readLine();
     long ma = l.replace("MemAvailable:","").replace("kB","").replace(" ","").toLong();
-    l = file.readLine();
-    //long mb = l.replace("Buffers:","").replace("kB","").replace(" ","").toLong();
-    l = file.readLine();
-    //long mc = l.replace("Cached:","").replace("kB","").replace(" ","").toLong();
-    file.close();
-    //long mu = mt - mf - mb -mc;
+    l = file.readLine();    
+    l = file.readLine();    
+    file.close();    
     long mu = mt - ma;
     int mp = mu*100/mt;
     QString mem = "内存: " + QString("%1/%2=%3").arg(KB(mu)).arg(KB(mt)).arg(QString::number(mp) + "%");
@@ -250,15 +276,15 @@ void CMDUPlugin::updateCMDU()
     if(i > 0){
         long ds = dbt1 - dbt0;
         long us = ubt1 - ubt0;
-        dbt = dbt0 + ds;
-        ubt = ubt0 + us;
+        //dbt = dbt0 + ds;
+        //ubt = ubt0 + us;
         dss = BS(ds) + "/s";
         uss = BS(us) + "/s";
         dbt0 = dbt1;
         ubt0 = ubt1;
     }
     QString netspeed = "↑ " + uss + "\n↓ " + dss;
-    QString net = "上传: " + BS(ubt) + "  " + uss + "\n下载: " + BS(dbt) + "  " + dss;
+    QString net = "上传: " + BS(ubt1) + "  " + uss + "\n下载: " + BS(dbt1) + "  " + dss;
 
     i++;
     if(i>2)i=2;
