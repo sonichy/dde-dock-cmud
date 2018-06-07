@@ -43,8 +43,7 @@ void CMDUWidget::paintEvent(QPaintEvent *e)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     if(mp >= 90){
-        painter.setBrush(Qt::red);
-        painter.drawRect(rect());
+        painter.fillRect(rect(), QBrush(Qt::red));
     }
     painter.setPen(Qt::white);
     painter.drawText(rect(), Qt::AlignLeft | Qt::AlignVCenter, text);
