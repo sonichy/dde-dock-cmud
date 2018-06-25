@@ -43,13 +43,15 @@ private:
     QPointer<QLabel> m_tipsLabel;
     QTimer *m_refershTimer;
     QSettings m_settings;
-    //QString m_currentTimeString;
     QString KB(long k);
     QString BS(long b);
     QString startup;
-    QLabel *labelStartupDuration;
-    void MBAbout();
-    void MBChangeLog();
+    //QLabel *labelStartupDuration;
+    void about();
+    void changeLog();
+    void bootRecord();
+    void bootAnalyze();
+
 };
 
 #endif // CMDUPlugin_H

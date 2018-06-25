@@ -120,6 +120,18 @@ const QString CMDUPlugin::itemContextMenu(const QString &itemKey)
     changelog["isActive"] = true;
     items.push_back(changelog);
 
+    QMap<QString, QVariant> boot_analyze;
+    boot_analyze["itemId"] = "boot_analyze";
+    boot_analyze["itemText"] = "启动分析";
+    boot_analyze["isActive"] = true;
+    items.push_back(boot_analyze);
+
+    QMap<QString, QVariant> boot_record;
+    boot_record["itemId"] = "boot_record";
+    boot_record["itemText"] = "开机记录";
+    boot_record["isActive"] = true;
+    items.push_back(boot_record);
+
     QMap<QString, QVariant> menu;
     menu["items"] = items;
     menu["checkableMenu"] = false;
@@ -129,32 +141,29 @@ const QString CMDUPlugin::itemContextMenu(const QString &itemKey)
 
 void CMDUPlugin::invokedMenuItem(const QString &itemKey, const QString &menuId, const bool checked)
 {
-    Q_UNUSED(itemKey)
-    Q_UNUSED(checked)
-
-    QStringList menuitems;
-    menuitems << "about" << "changelog";
-
-    switch(menuitems.indexOf(menuId)){
-    case 0:
-        MBAbout();
-        break;
-    case 1:
-        MBChangeLog();
-        break;
+    Q_UNUSED(itemKey);
+    Q_UNUSED(checked);
+    if(menuId == "about"){
+        about();
+    }else if(menuId == "changelog"){
+        changeLog();
+    }else if(menuId == "boot_analyze"){
+        bootAnalyze();
+    }else if(menuId == "boot_record"){
+        bootRecord();
     }
 }
 
-void CMDUPlugin::MBAbout()
+void CMDUPlugin::about()
 {
-    QMessageBox aboutMB(QMessageBox::NoIcon, "系统信息 3.4", "关于\n\n深度Linux系统上一款在任务栏显示网速，鼠标悬浮显示开机时间、CPU占用、内存占用、下载字节、上传字节的插件。\n作者：黄颖\nE-mail: sonichy@163.com\n源码：https://github.com/sonichy/CMDU_DDE_DOCK\n致谢：\nlinux028@deepin.org");
+    QMessageBox aboutMB(QMessageBox::NoIcon, "系统信息 3.5", "关于\n\n深度Linux系统上一款在任务栏显示网速，鼠标悬浮显示开机时间、CPU占用、内存占用、下载字节、上传字节的插件。\n作者：黄颖\nE-mail: sonichy@163.com\n源码：https://github.com/sonichy/CMDU_DDE_DOCK\n致谢：\nlinux028@deepin.org");
     aboutMB.setIconPixmap(QPixmap(":/icon.png"));
     aboutMB.exec();
 }
 
-void CMDUPlugin::MBChangeLog()
+void CMDUPlugin::changeLog()
 {
-    QString s = "更新日志\n\n3.4 (2018-06-03)\n1.支持新版dock的排序功能。\n\n3.3 (2018-05-17)\n1.内存超过90%变红预警。\n2.网速小于 999 字节显示为 0.00 KB\n3.使用安全的 QString.right() 替代 QStringList.at()，增加：ms 替换为 毫秒。\n\n3.2 (2018-05-08)\n网速全部计算，不会再出现为0的情况。\n取消启动时间浮窗。\n\n3.1 (2018-03-17)\n修改空余内存计算范围。\n\n3.0 (2018-02-25)\n在新版本时间插件源码基础上修改，解决右键崩溃问题，并支持右键开关。\n\n2.4 (2017-11-11)\n增加开机时间。\n\n2.3 (2017-09-05)\n自动判断网速所在行。\n\n2.２ (2017-07-08)\n1.设置网速所在行。\n\n2.1 (2017-02-01)\n1.上传下载增加GB单位换算，且参数int改long，修复字节单位换算溢出BUG。\n\n2.0 (2016-12-07)\n1.增加右键菜单。\n\n1.0 (2016-11-01)\n1.把做好的Qt程序移植到DDE-DOCK。";
+    QString s = "更新日志\n\n3.5 (2018-06-25)\n1.增加启动分析和开机记录。\n\n3.4 (2018-06-03)\n1.支持新版dock的排序功能。\n\n3.3 (2018-05-17)\n1.内存超过90%变红预警。\n2.网速小于 999 字节显示为 0.00 KB\n3.使用安全的 QString.right() 替代 QStringList.at()，增加：ms 替换为 毫秒。\n\n3.2 (2018-05-08)\n网速全部计算，不会再出现为0的情况。\n取消启动时间浮窗。\n\n3.1 (2018-03-17)\n修改空余内存计算范围。\n\n3.0 (2018-02-25)\n在新版本时间插件源码基础上修改，解决右键崩溃问题，并支持右键开关。\n\n2.4 (2017-11-11)\n增加开机时间。\n\n2.3 (2017-09-05)\n自动判断网速所在行。\n\n2.２ (2017-07-08)\n1.设置网速所在行。\n\n2.1 (2017-02-01)\n1.上传下载增加GB单位换算，且参数int改long，修复字节单位换算溢出BUG。\n\n2.0 (2016-12-07)\n1.增加右键菜单。\n\n1.0 (2016-11-01)\n1.把做好的Qt程序移植到DDE-DOCK。";
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle("系统信息");
     dialog->setFixedSize(400,300);
@@ -227,12 +236,12 @@ void CMDUPlugin::updateCMDU()
     file.open(QIODevice::ReadOnly);
     l = file.readLine();
     long mt = l.replace("MemTotal:","").replace("kB","").replace(" ","").toLong();
-    l = file.readLine();    
+    l = file.readLine();
     l = file.readLine();
     long ma = l.replace("MemAvailable:","").replace("kB","").replace(" ","").toLong();
-    l = file.readLine();    
-    l = file.readLine();    
-    file.close();    
+    l = file.readLine();
+    l = file.readLine();
+    file.close();
     long mu = mt - ma;
     int mp = mu*100/mt;
     QString mem = "内存: " + QString("%1/%2=%3").arg(KB(mu)).arg(KB(mt)).arg(QString::number(mp) + "%");
@@ -263,7 +272,6 @@ void CMDUPlugin::updateCMDU()
     dbt1=ubt1=0;
     while(!file.atEnd()){
         l = file.readLine();
-        //if(l.contains("lo",Qt::CaseInsensitive))l = file.readLine();
         QStringList list = l.split(QRegExp("\\s{1,}"));
         db = list.at(1).toLong();
         ub = list.at(9).toLong();
@@ -276,8 +284,6 @@ void CMDUPlugin::updateCMDU()
     if(i > 0){
         long ds = dbt1 - dbt0;
         long us = ubt1 - ubt0;
-        //dbt = dbt0 + ds;
-        //ubt = ubt0 + us;
         dss = BS(ds) + "/s";
         uss = BS(us) + "/s";
         dbt0 = dbt1;
@@ -295,4 +301,60 @@ void CMDUPlugin::updateCMDU()
     m_centralWidget->mp = mp;
     m_centralWidget->update();
 
+}
+
+void CMDUPlugin::bootRecord()
+{
+    QProcess *process = new QProcess;
+    process->start("last reboot");
+    process->waitForFinished();
+    QString PO = process->readAllStandardOutput();
+    QDialog *dialog = new QDialog;
+    dialog->setWindowTitle("开机记录");
+    dialog->setFixedSize(500,400);
+    QVBoxLayout *vbox = new QVBoxLayout;
+    QTextBrowser *textBrowser = new QTextBrowser;
+    textBrowser->setText(PO);
+    textBrowser->zoomIn();
+    vbox->addWidget(textBrowser);
+    QHBoxLayout *hbox = new QHBoxLayout;
+    QPushButton *btnConfirm = new QPushButton("确定");
+    hbox->addStretch();
+    hbox->addWidget(btnConfirm);
+    hbox->addStretch();
+    vbox->addLayout(hbox);
+    dialog->setLayout(vbox);
+    dialog->show();
+    connect(btnConfirm, SIGNAL(clicked()), dialog, SLOT(accept()));
+    if(dialog->exec() == QDialog::Accepted){
+        dialog->close();
+    }
+}
+
+void CMDUPlugin::bootAnalyze()
+{
+    QProcess *process = new QProcess;
+    process->start("systemd-analyze blame");
+    process->waitForFinished();
+    QString PO = process->readAllStandardOutput();
+    QDialog *dialog = new QDialog;
+    dialog->setWindowTitle("启动进程耗时");
+    dialog->setFixedSize(500,400);
+    QVBoxLayout *vbox = new QVBoxLayout;
+    QTextBrowser *textBrowser = new QTextBrowser;
+    textBrowser->setText(PO);
+    textBrowser->zoomIn();
+    vbox->addWidget(textBrowser);
+    QHBoxLayout *hbox = new QHBoxLayout;
+    QPushButton *btnConfirm = new QPushButton("确定");
+    hbox->addStretch();
+    hbox->addWidget(btnConfirm);
+    hbox->addStretch();
+    vbox->addLayout(hbox);
+    dialog->setLayout(vbox);
+    dialog->show();
+    connect(btnConfirm, SIGNAL(clicked()), dialog, SLOT(accept()));
+    if(dialog->exec() == QDialog::Accepted){
+        dialog->close();
+    }
 }
