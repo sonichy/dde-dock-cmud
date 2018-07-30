@@ -14,7 +14,7 @@ public:
     bool enabled();
     void setEnabled(const bool b);
     QString text;
-    int mp;
+    int mp,cp;
 
 signals:
     void requestUpdateGeometry() const;

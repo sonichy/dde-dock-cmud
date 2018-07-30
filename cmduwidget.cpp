@@ -14,6 +14,7 @@ CMDUWidget::CMDUWidget(QWidget *parent)
 {
     text = "↑0.00B/s\n↓0.00B/s";
     mp = 0;
+    cp = 0;
 }
 
 bool CMDUWidget::enabled()
@@ -33,7 +34,7 @@ QSize CMDUWidget::sizeHint() const
 }
 
 void CMDUWidget::resizeEvent(QResizeEvent *e)
-{    
+{
     QWidget::resizeEvent(e);
 }
 
@@ -42,11 +43,13 @@ void CMDUWidget::paintEvent(QPaintEvent *e)
     Q_UNUSED(e);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
+    painter.setPen(Qt::white);
+    painter.drawText(rect(), Qt::AlignLeft | Qt::AlignVCenter, text);
+    painter.fillRect(0,height()*(100-mp)/100,2,height()*mp/100,Qt::green);
+    painter.fillRect(width()-2,height()*(100-cp)/100,2,height()*cp/100,Qt::green);
     if(mp >= 90){
         painter.fillRect(rect(), QBrush(Qt::red));
     }
-    painter.setPen(Qt::white);
-    painter.drawText(rect(), Qt::AlignLeft | Qt::AlignVCenter, text);
 }
 
 void CMDUWidget::mousePressEvent(QMouseEvent *e)
