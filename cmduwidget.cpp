@@ -10,9 +10,9 @@
 
 CMDUWidget::CMDUWidget(QWidget *parent)
     : QWidget(parent),
-    m_settings("deepin", "dde-dock-cmdu")
+      m_settings("deepin", "dde-dock-cmdu")
 {
-    text = "↑0.00B/s\n↓0.00B/s";
+    text = " ↑  0.00KB/s \n ↓  0.00KB/s ";
     mp = 0;
     cp = 0;
 }
@@ -30,7 +30,7 @@ void CMDUWidget::setEnabled(const bool b)
 QSize CMDUWidget::sizeHint() const
 {
     QFontMetrics FM(qApp->font());
-    return FM.boundingRect("↑000.00KB/s  ").size() + QSize(0,FM.boundingRect("↓000.00KB/s  ").height());
+    return FM.boundingRect(" ↑000.00KB/s ").size() + QSize(0,FM.boundingRect(" ↓000.00KB/s ").height());
 }
 
 void CMDUWidget::resizeEvent(QResizeEvent *e)
@@ -43,13 +43,17 @@ void CMDUWidget::paintEvent(QPaintEvent *e)
     Q_UNUSED(e);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    if(mp >= 90){
-        painter.fillRect(rect(), QBrush(Qt::red));
-    }
+    //if(mp >= 90){
+    //    painter.fillRect(rect(), QBrush(Qt::red));
+    //}
     painter.setPen(Qt::white);
     painter.drawText(rect(), Qt::AlignLeft | Qt::AlignVCenter, text);
-    painter.fillRect(0, height()*(100-mp)/100, 2, height()*mp/100, Qt::green);
-    painter.fillRect(width()-2, height()*(100-cp)/100, 2, height()*cp/100, Qt::green);
+    if(mp < 90){
+        painter.fillRect(0, height()*(100-mp)/100, 2, height()*mp/100, Qt::white);
+    }else{
+        painter.fillRect(0, height()*(100-mp)/100, 2, height()*mp/100, Qt::red);
+    }
+    painter.fillRect(width()-2, height()*(100-cp)/100, 2, height()*cp/100, Qt::white);
 }
 
 void CMDUWidget::mousePressEvent(QMouseEvent *e)
