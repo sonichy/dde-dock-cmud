@@ -14,7 +14,7 @@ public:
     bool enabled();
     void setEnabled(const bool b);
     QString text;
-    int mp,cp;
+    int mp, cp;
 
 signals:
     void requestUpdateGeometry() const;
@@ -32,6 +32,8 @@ private:
     QString m_cachedTime;
     QSettings m_settings;
     bool m_24HourFormat;
+    QFont font;
+
 };
 
 #endif // CMDUWIDGET_H
