@@ -45,6 +45,7 @@ private:
     QSettings m_settings;
     QString KB(long k);
     QString BS(long b);
+    QString NB(long b);
     QString startup;
     //QLabel *labelStartupDuration;
     void about();

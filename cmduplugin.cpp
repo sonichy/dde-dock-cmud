@@ -163,7 +163,7 @@ void CMDUPlugin::about()
 
 void CMDUPlugin::changeLog()
 {
-    QString s = "更新日志\n\n3.7 (2018-10-11)\n1.内存竖进度条绿色改白色，内存超过90%红色背景改内存竖进度条红色。\n2.补位+等宽字体，解决对齐问题。\n\n3.6 (2018-07-30)\n1.增加内存和CPU竖线。\n\n3.5 (2018-06-25)\n1.增加启动分析和开机记录。\n\n3.4 (2018-06-03)\n1.支持新版dock的排序功能。\n\n3.3 (2018-05-17)\n1.内存超过90%变红预警。\n2.网速小于 999 字节显示为 0.00 KB\n3.使用安全的 QString.right() 替代 QStringList.at()，增加：ms 替换为 毫秒。\n\n3.2 (2018-05-08)\n网速全部计算，不会再出现为0的情况。\n取消启动时间浮窗。\n\n3.1 (2018-03-17)\n修改空余内存计算范围。\n\n3.0 (2018-02-25)\n在新版本时间插件源码基础上修改，解决右键崩溃问题，并支持右键开关。\n\n2.4 (2017-11-11)\n增加开机时间。\n\n2.3 (2017-09-05)\n自动判断网速所在行。\n\n2.２ (2017-07-08)\n1.设置网速所在行。\n\n2.1 (2017-02-01)\n1.上传下载增加GB单位换算，且参数int改long，修复字节单位换算溢出BUG。\n\n2.0 (2016-12-07)\n1.增加右键菜单。\n\n1.0 (2016-11-01)\n1.把做好的Qt程序移植到DDE-DOCK。";
+    QString s = "更新日志\n\n3.7 (2018-10-12)\n1.内存竖进度条绿色改白色，内存超过90%红色背景改内存竖进度条红色。\n2.补位+等宽字体，解决对齐问题。\n3.网速固定为 KB/s 单位。\n\n3.6 (2018-07-30)\n1.增加内存和CPU竖线。\n\n3.5 (2018-06-25)\n1.增加启动分析和开机记录。\n\n3.4 (2018-06-03)\n1.支持新版dock的排序功能。\n\n3.3 (2018-05-17)\n1.内存超过90%变红预警。\n2.网速小于 999 字节显示为 0.00 KB\n3.使用安全的 QString.right() 替代 QStringList.at()，增加：ms 替换为 毫秒。\n\n3.2 (2018-05-08)\n网速全部计算，不会再出现为0的情况。\n取消启动时间浮窗。\n\n3.1 (2018-03-17)\n修改空余内存计算范围。\n\n3.0 (2018-02-25)\n在新版本时间插件源码基础上修改，解决右键崩溃问题，并支持右键开关。\n\n2.4 (2017-11-11)\n增加开机时间。\n\n2.3 (2017-09-05)\n自动判断网速所在行。\n\n2.２ (2017-07-08)\n1.设置网速所在行。\n\n2.1 (2017-02-01)\n1.上传下载增加GB单位换算，且参数int改long，修复字节单位换算溢出BUG。\n\n2.0 (2016-12-07)\n1.增加右键菜单。\n\n1.0 (2016-11-01)\n1.把做好的Qt程序移植到DDE-DOCK。";
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle("系统信息");
     dialog->setFixedSize(400,300);
@@ -205,17 +205,31 @@ QString CMDUPlugin::BS(long b)
 {
     QString s = "";
     if(b > 999999999){
-        s = QString("%1").arg(b/(1024*1024*1024.0), 6, 'f', 2, QLatin1Char(' ')) + "GB";
+        //s = QString("%1").arg(b/(1024*1024*1024.0), 6, 'f', 2, QLatin1Char(' ')) + "GB";
+        s = QString::number(b/(1024*1024*1024.0), 'f', 2) + "GB";
     }else{
         if(b > 999999){
-            s = QString("%1").arg(b/(1024*1024.0), 6, 'f', 2, QLatin1Char(' ')) + "MB";
+            //s = QString("%1").arg(b/(1024*1024.0), 6, 'f', 2, QLatin1Char(' ')) + "MB";
+            s = QString::number(b/(1024*1024.0), 'f', 2) + "MB";
         }else{
             if(b>999){
-                s = QString("%1").arg(b/1024.0, 6, 'f', 2, QLatin1Char(' ')) + "KB";
+                //s = QString("%1").arg(b/1024.0, 6, 'f', 2, QLatin1Char(' ')) + "KB";
+                s = QString::number(b/(1024.0), 'f',2) + "KB";
             }else{
-                s = QString("%1").arg(0, 6, 'f', 2, QLatin1Char(' ')) + "KB";
+                s = b + "B";
             }
         }
+    }
+    return s;
+}
+
+QString CMDUPlugin::NB(long b)
+{
+    QString s = "";
+    if(b>999){
+        s = QString("%1").arg(b/1024, 5, 'f', 0, QLatin1Char(' ')) + "KB";
+    }else{
+        s = QString("%1").arg(0, 5, 'f', 0, QLatin1Char(' ')) + "KB";
     }
     return s;
 }
@@ -270,7 +284,7 @@ void CMDUPlugin::updateCMDU()
     file.open(QIODevice::ReadOnly);
     l = file.readLine();
     l = file.readLine();
-    dbt1=ubt1=0;
+    dbt1 = ubt1 = 0;
     while(!file.atEnd()){
         l = file.readLine();
         QStringList list = l.split(QRegExp("\\s{1,}"));
@@ -282,11 +296,11 @@ void CMDUPlugin::updateCMDU()
     file.close();
     QString dss = "";
     QString uss = "";
-    if(i > 0){
+    if (i > 0) {
         long ds = dbt1 - dbt0;
         long us = ubt1 - ubt0;
-        dss = BS(ds) + "/s";
-        uss = BS(us) + "/s";
+        dss = NB(ds) + "/s";
+        uss = NB(us) + "/s";
         dbt0 = dbt1;
         ubt0 = ubt1;
     }
@@ -294,7 +308,7 @@ void CMDUPlugin::updateCMDU()
     QString net = "上传: " + BS(ubt1) + "  " + uss + "\n下载: " + BS(dbt1) + "  " + dss;
 
     i++;
-    if(i>2)i=2;
+    if (i>2) i = 2;
 
     // 绘制
     m_tipsLabel->setText(startup + "\n" + uptime + "\n" + cusage + "\n" + mem + "\n" + net);
