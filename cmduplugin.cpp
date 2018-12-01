@@ -203,23 +203,14 @@ QString CMDUPlugin::KB(long k)
 
 QString CMDUPlugin::BS(long b)
 {
-    QString s = "";
-    if(b > 999999999){
-        //s = QString("%1").arg(b/(1024*1024*1024.0), 6, 'f', 2, QLatin1Char(' ')) + "GB";
-        s = QString::number(b/(1024*1024*1024.0), 'f', 2) + "GB";
-    }else{
-        if(b > 999999){
-            //s = QString("%1").arg(b/(1024*1024.0), 6, 'f', 2, QLatin1Char(' ')) + "MB";
-            s = QString::number(b/(1024*1024.0), 'f', 2) + "MB";
-        }else{
-            if(b>999){
-                //s = QString("%1").arg(b/1024.0, 6, 'f', 2, QLatin1Char(' ')) + "KB";
-                s = QString::number(b/(1024.0), 'f',2) + "KB";
-            }else{
-                s = b + "B";
-            }
-        }
+    size_t index = 0;
+    QString szType[] = {"B", "KB", "MB", "GB", "TB"};
+    while (b > 1024)
+    {
+        b /= 1024.0;
+        ++ index;
     }
+    QString s = QString::number(b, 'f', 2) + szType[index];
     return s;
 }
 
