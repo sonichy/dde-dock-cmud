@@ -44,9 +44,6 @@ void CMDUWidget::paintEvent(QPaintEvent *e)
     Q_UNUSED(e);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    //if(mp >= 90){
-    //    painter.fillRect(rect(), QBrush(Qt::red));
-    //}
     painter.setPen(Qt::white);
     painter.setFont(font);
     painter.drawText(rect().adjusted(2,0,0,0), Qt::AlignLeft | Qt::AlignVCenter, text);
