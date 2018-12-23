@@ -21,7 +21,6 @@ signals:
     void requestContextMenu() const;
 
 public slots:
-    //void toggleHourFormat();
 
 private:
     QSize sizeHint() const;
@@ -32,7 +31,6 @@ private:
     QString m_cachedTime;
     QSettings m_settings;
     bool m_24HourFormat;
-    QFont font;
 
 };
 

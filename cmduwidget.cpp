@@ -12,7 +12,6 @@ CMDUWidget::CMDUWidget(QWidget *parent)
     : QWidget(parent),
       m_settings("deepin", "dde-dock-cmdu")
 {
-    font.setFamily("Noto Mono");
     text = " ↑    0KB/s \n ↓    0KB/s ";
     mp = 0;
     cp = 0;
@@ -30,6 +29,8 @@ void CMDUWidget::setEnabled(const bool b)
 
 QSize CMDUWidget::sizeHint() const
 {
+    QFont font = qApp->font();
+    font.setFamily("Noto Mono");
     QFontMetrics FM(font);
     return FM.boundingRect(" ↑    0KB/s ").size() + QSize(0, FM.boundingRect(" ↓    0KB/s ").height());
 }
@@ -45,6 +46,8 @@ void CMDUWidget::paintEvent(QPaintEvent *e)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(Qt::white);
+    QFont font = qApp->font();
+    font.setFamily("Noto Mono");
     painter.setFont(font);
     painter.drawText(rect().adjusted(2,0,0,0), Qt::AlignLeft | Qt::AlignVCenter, text);
     if(mp < 90){
