@@ -49,7 +49,7 @@ private:
     QString startup;
     //QLabel *labelStartupDuration;
     void about();
-    void changeLog();
+    void changelog();
     void bootRecord();
     void bootAnalyze();
 

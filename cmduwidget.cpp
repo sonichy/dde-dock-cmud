@@ -57,18 +57,3 @@ void CMDUWidget::paintEvent(QPaintEvent *e)
     }
     painter.fillRect(width()-2, height()*(100-cp)/100, 2, height()*cp/100, Qt::white);
 }
-
-void CMDUWidget::mousePressEvent(QMouseEvent *e)
-{
-    if (e->button() != Qt::RightButton)
-        return QWidget::mousePressEvent(e);
-
-    const QPoint p(e->pos() - rect().center());
-    if (p.manhattanLength() < std::min(width(), height()) * 0.8 * 0.5)
-    {
-        emit requestContextMenu();
-        return;
-    }
-
-    QWidget::mousePressEvent(e);
-}

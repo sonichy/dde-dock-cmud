@@ -10,7 +10,6 @@ class CMDUWidget : public QWidget
 
 public:
     explicit CMDUWidget(QWidget *parent = 0);
-    //bool is24HourFormat() const { return m_24HourFormat; }
     bool enabled();
     void setEnabled(const bool b);
     QString text;
@@ -18,15 +17,11 @@ public:
 
 signals:
     void requestUpdateGeometry() const;
-    void requestContextMenu() const;
-
-public slots:
 
 private:
     QSize sizeHint() const;
     void resizeEvent(QResizeEvent *e);
     void paintEvent(QPaintEvent *e);
-    void mousePressEvent(QMouseEvent *e);
     QPixmap m_cachedIcon;
     QString m_cachedTime;
     QSettings m_settings;
