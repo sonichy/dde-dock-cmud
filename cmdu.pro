@@ -1,16 +1,9 @@
-
-#include(../dde-dock/interfaces/interfaces.pri)
-
-QT              += widgets svg
+QT              += widgets
 TEMPLATE         = lib
-CONFIG          += plugin c++11 link_pkgconfig
-PKGCONFIG       +=
+CONFIG          += plugin c++11
 
-#TARGET          = $$qtLibraryTarget(datetime)
-TARGET           = CMDU
-#DESTDIR          = $$_PRO_FILE_PWD_/../
-DISTFILES       += \
-    cmdu.json
+TARGET           = HTYCMDU
+DISTFILES       += cmdu.json
 
 HEADERS += \
     cmduplugin.h \
@@ -20,8 +13,4 @@ SOURCES += \
     cmduplugin.cpp \
     cmduwidget.cpp
 
-target.path = $${PREFIX}/lib/dde-dock/plugins/
-INSTALLS += target
-
-RESOURCES += \
-    res.qrc
+RESOURCES += res.qrc
