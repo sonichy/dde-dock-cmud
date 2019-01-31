@@ -23,15 +23,12 @@ CMDUPlugin::CMDUPlugin(QObject *parent)
     connect(m_centralWidget, &CMDUWidget::requestUpdateGeometry, [this] { m_proxyInter->itemUpdate(this, pluginName()); });
     connect(m_refershTimer, &QTimer::timeout, this, &CMDUPlugin::updateCMDU);
 
-    // 开机时长
+    // Boot time
     QProcess *process = new QProcess;
     process->start("systemd-analyze");
     process->waitForFinished();
     QString PO = process->readAllStandardOutput();
     QString SD = PO.mid(PO.indexOf("=") + 1, PO.indexOf("\n") - PO.indexOf("=") - 1);
-    //SD.replace("min"," 分");
-    //SD.replace("ms"," 毫秒");
-    //SD.replace("s"," 秒");
     startup = "SUT: " + SD;
 }
 
@@ -235,7 +232,7 @@ QString CMDUPlugin::NB(long b)
 
 void CMDUPlugin::updateCMDU()
 {
-    // 开机
+    // uptime
     QFile file("/proc/uptime");
     file.open(QIODevice::ReadOnly);
     QString l = file.readLine();
@@ -244,7 +241,7 @@ void CMDUPlugin::updateCMDU()
     t = t.addSecs(l.left(l.indexOf(".")).toInt());
     QString uptime = "UTM: " + t.toString("hh:mm:ss");
 
-    //内存
+    // memory
     file.setFileName("/proc/meminfo");
     file.open(QIODevice::ReadOnly);
     l = file.readLine();
@@ -278,7 +275,7 @@ void CMDUPlugin::updateCMDU()
     idle0 = idle;
     tt0 = tt;
 
-    // 网速
+    // net
     file.setFileName("/proc/net/dev");
     file.open(QIODevice::ReadOnly);
     l = file.readLine();
@@ -309,7 +306,7 @@ void CMDUPlugin::updateCMDU()
     i++;
     if (i>2) i = 2;
 
-    // 绘制
+    // draw
     m_tipsLabel->setText(startup + "\n" + uptime + "\n" + cusage + "\n" + mem + "\n" + net);
     m_centralWidget->text = netspeed;
     m_centralWidget->mp = mp;

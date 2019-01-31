@@ -3,7 +3,6 @@
 #include <QApplication>
 #include <QPainter>
 #include <QDebug>
-#include <QSvgRenderer>
 #include <QMouseEvent>
 
 #define PLUGIN_STATE_KEY    "enable"
