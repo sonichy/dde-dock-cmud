@@ -7,7 +7,7 @@ if [ $codename=="stable" ]; then
 elif [ $codename=="unstable" ]; then
     deepin="yes"
 else
-    echo "未能确定版本"
+    echo "未能确定deepin版本"
 fi
 
 if [ "$deepin" = "yes" ]; then
