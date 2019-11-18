@@ -222,9 +222,9 @@ QString CMDUPlugin::BS(long b)
 QString CMDUPlugin::NB(long b)
 {
     QString s = "";
-    if(b>999){
+    if (b>999) {
         s = QString("%1").arg(b/1024, 5, 'f', 0, QLatin1Char(' ')) + "KB";
-    }else{
+    } else { // <1K => 0
         s = QString("%1").arg(0, 5, 'f', 0, QLatin1Char(' ')) + "KB";
     }
     return s;
