@@ -10,6 +10,8 @@
 卸载：终端 ./uninstall.sh  
 
 ### 系统版本对应插件版本
-Deepin | Dock Plugin |
-20 | 1.2 |
-15.11 | 1.1.1｜
+<table>
+<tr><th>Deepin</th><th>Dock Plugin</th></tr>
+<tr><td>20</td><td>>1.2</td></tr>
+<tr><td>15.11</td><td>>1.1.1</td></tr>
+</table>
