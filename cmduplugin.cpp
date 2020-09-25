@@ -128,6 +128,12 @@ const QString CMDUPlugin::itemContextMenu(const QString &itemKey)
     boot_record["isActive"] = true;
     items.push_back(boot_record);
 
+    QMap<QString, QVariant> system_monitor;
+    system_monitor["itemId"] = "system_monitor";
+    system_monitor["itemText"] = tr("System monitor");
+    system_monitor["isActive"] = true;
+    items.push_back(system_monitor);
+
     QMap<QString, QVariant> menu;
     menu["items"] = items;
     menu["checkableMenu"] = false;
@@ -139,27 +145,29 @@ void CMDUPlugin::invokedMenuItem(const QString &itemKey, const QString &menuId, 
 {
     Q_UNUSED(itemKey);
     Q_UNUSED(checked);
-    if(menuId == "about"){
+    if (menuId == "about") {
         about();
-    }else if(menuId == "changelog"){
+    } else if (menuId == "changelog") {
         changelog();
-    }else if(menuId == "boot_analyze"){
+    } else if (menuId == "boot_analyze") {
         bootAnalyze();
-    }else if(menuId == "boot_record"){
+    } else if (menuId == "boot_record") {
         bootRecord();
+    } else if (menuId == "system_monitor") {
+        QProcess::startDetached("deepin-system-monitor");
     }
 }
 
 void CMDUPlugin::about()
 {
-    QMessageBox aboutMB(QMessageBox::NoIcon, "HTYCMDU 3.10", "About\n\nDeepin Linux DDE Dock netspeed plugin.\nAuthor：黄颖\nE-mail: sonichy@163.com\nSource：https://github.com/sonichy/CMDU_DDE_DOCK");
+    QMessageBox aboutMB(QMessageBox::NoIcon, "HTYCMDU 3.11", "[About]\n\nDeepin Linux DDE Dock netspeed plugin.\nAuthor：海天鹰\nE-mail: sonichy@163.com\nSource：https://github.com/sonichy/CMDU_DDE_DOCK");
     aboutMB.setIconPixmap(QPixmap(":/icon.png"));
     aboutMB.exec();
 }
 
 void CMDUPlugin::changelog()
 {
-    QString s = "Changelog\n\n3.10 (2019-01-10)\n1.Change DDE-Dock API 1.1 version to 1.1.1。\n\n3.9 (2018-12-23)\n1.Use monospace font to fix width.\n\n3.8 (2018-12-14)\n1.Change DDE-Dock API 1.0 version to 1.1.\n\n3.7 (2018-10-12)\n1.Change memory vertial percent line green color to white, change above 90% red background to red line.\n2.Insert bit + monospace font, solve align.\n3.Netspeed unit fix to KB/s.\n\n3.6 (2018-07-30)\n1.Add memory vertical percent line and CPU usage percent vertical line.\n\n3.5 (2018-06-25)\n1.Add boot analyze and boot record.\n\n3.4 (2018-06-03)\n1.Support dock reorder.\n\n3.3 (2018-05-17)\n1.Turn to red background when memory percent over 90%.\n2.Netspeed <999 bytes to 0.00 KB.\n3.Use safty QString.right() replace QStringList.at(), \"ms\" replace \"毫秒\".\n\n3.2 (2018-05-08)\nCalculate all net speed line, no need to choose line.\nRemove startup float window.\n\n3.1 (2018-03-17)\nModigfy free memory algorithm.\n\n3.0 (2018-02-25)\nModify from dock plugin source code, solve right click crash and switch.\n\n2.4 (2017-11-11)\nAdd boot duration.\n\n2.3 (2017-09-05)\nAuto get current netspeed line.\n\n2.２ (2017-07-08)\n1.Set current netspeed line.\n\n2.1 (2017-02-01)\n1.Upload and download support GB, int parameter change to long, solve bytes unit convert overflow.\n\n2.0 (2016-12-07)\n1.Add right click menu.\n\n1.0 (2016-11-01)\n1.Change Qt program to DDE-DOCK.";
+    QString s = "Changelog\n\n3.11 (2019-09-25)\nRight menu add [System monitor] to launch deepin-system-monitor.\n\n3.10 (2019-01-10)\n1.Change DDE-Dock API 1.1 version to 1.1.1。\n\n3.9 (2018-12-23)\n1.Use monospace font to fix width.\n\n3.8 (2018-12-14)\n1.Change DDE-Dock API 1.0 version to 1.1.\n\n3.7 (2018-10-12)\n1.Change memory vertial percent line green color to white, change above 90% red background to red line.\n2.Insert bit + monospace font, solve align.\n3.Netspeed unit fix to KB/s.\n\n3.6 (2018-07-30)\n1.Add memory vertical percent line and CPU usage percent vertical line.\n\n3.5 (2018-06-25)\n1.Add boot analyze and boot record.\n\n3.4 (2018-06-03)\n1.Support dock reorder.\n\n3.3 (2018-05-17)\n1.Turn to red background when memory percent over 90%.\n2.Netspeed <999 bytes to 0.00 KB.\n3.Use safty QString.right() replace QStringList.at(), \"ms\" replace \"毫秒\".\n\n3.2 (2018-05-08)\nCalculate all net speed line, no need to choose line.\nRemove startup float window.\n\n3.1 (2018-03-17)\nModigfy free memory algorithm.\n\n3.0 (2018-02-25)\nModify from dock plugin source code, solve right click crash and switch.\n\n2.4 (2017-11-11)\nAdd boot duration.\n\n2.3 (2017-09-05)\nAuto get current netspeed line.\n\n2.２ (2017-07-08)\n1.Set current netspeed line.\n\n2.1 (2017-02-01)\n1.Upload and download support GB, int parameter change to long, solve bytes unit convert overflow.\n\n2.0 (2016-12-07)\n1.Add right click menu.\n\n1.0 (2016-11-01)\n1.Change Qt program to DDE-DOCK.";
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle("HTYCMDU");
     dialog->setFixedSize(400,300);
