@@ -282,6 +282,73 @@ void CMDUPlugin::updateCMDU()
     if(i>0) cusage = "CPU: " + QString::number(cp) + "%";
     idle0 = idle;
     tt0 = tt;
+    // gpu
+
+    QString cmd_text(" #!/bin/bash \n "
+                     " ################################################################################## \n "
+                     " #    This file is part of System Monitor Gnome extension. \n "
+                     " #    System Monitor Gnome extension is free software: you can redistribute it and/or modify \n "
+                     " #    it under the terms of the GNU General Public License as published by \n "
+                     " #    the Free Software Foundation, either version 3 of the License, or \n "
+                     " #    (at your option) any later version. \n "
+                     " #    System Monitor Gnome extension is distributed in the hope that it will be useful, \n "
+                     " #    but WITHOUT ANY WARRANTY; without even the implied warranty of \n "
+                     " #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the \n "
+                     " #    GNU General Public License for more details. \n "
+                     " #    You should have received a copy of the GNU General Public License \n "
+                     " #    along with System Monitor.  If not, see <http://www.gnu.org/licenses/>. \n "
+                     " #    Copyright 2017 Fran Glais, David King, indigohedgehog@github. \n "
+                     " ################################################################################## \n "
+                     "  \n "
+                     " ################################## \n "
+                     " #                                # \n "
+                     " #   Check for GPU memory usage   # \n "
+                     " #                                # \n "
+                     " ################################## \n "
+                     "  \n "
+                     " checkcommand()  \n "
+                     " {  \n "
+                     " 	type $1 > /dev/null 2>&1 \n "
+                     " 	return \"$?\" \n "
+                     " } \n "
+                     "  \n "
+                     " # This will print three lines. The first one is the the total vRAM available, \n "
+                     " # the second one is the used vRAM and the third on is the GPU usage in %. \n "
+                     " if checkcommand nvidia-smi; then \n "
+                     " 	nvidia-smi -i 0 --query-gpu=memory.total,memory.used,utilization.gpu --format=csv,noheader,nounits | sed 's%, %\\n%g' \n "
+                     " elif checkcommand glxinfo; then \n "
+                     " 	TOTALVRAM=\"`glxinfo | grep -A2 -i GL_NVX_gpu_memory_info | egrep -i \"dedicated\" | cut -f2- -d ':' | gawk '{print $1}'`\" \n "
+                     " 	AVAILVRAM=\"`glxinfo | grep -A4 -i GL_NVX_gpu_memory_info | egrep -i \"available dedicated\" | cut -f2- -d ':' | gawk '{print $1}'`\" \n "
+                     " 	let FREEVRAM=TOTALVRAM-AVAILVRAM \n "
+                     " 	echo \"$TOTALVRAM\" \n "
+                     " 	echo \"$FREEVRAM\" \n "
+                     " fi \n "
+                     "  \n ");
+    QFile gfile("/tmp/gpu_usage.sh");
+    if (!gfile.exists()){
+        gfile.open(QIODevice::WriteOnly | QIODevice::Text);
+        gfile.write(cmd_text.toUtf8());
+        gfile.close();
+    }
+    QProcess p;
+    int gpu_usage = 0;
+    int gpu_mem = 0;
+    p.start("/bin/bash /tmp/gpu_usage.sh");
+    p.waitForFinished();
+    QString strResult = p.readAllStandardOutput();
+    QStringList list = strResult.split("\n");
+    QString gpu_tips("");
+    QString gpu_mem_tips("");
+    if(list.size() == 4){
+        int gpu_mem_total = list[0].toInt();
+        int gpu_mem_use = list[1].toInt();
+        gpu_mem = gpu_mem_use*100 / gpu_mem_total;
+        gpu_usage = list[2].toInt();
+        gpu_tips = "GPU: " + QString::number(gpu_usage) + "%";
+        gpu_mem_tips = "GPU MEM: " + QString("%1 / %2 = %3").arg(KB(gpu_mem_use*1024)).arg(KB(gpu_mem_total*1024)).arg(QString::number(mp) + "%");
+    }else{
+        gpu_tips = "GPU detect error.";
+    }
 
     // net
     file.setFileName("/proc/net/dev");
@@ -315,10 +382,12 @@ void CMDUPlugin::updateCMDU()
     if (i>2) i = 2;
 
     // draw
-    m_tipsLabel->setText(startup + "\n" + uptime + "\n" + cusage + "\n" + mem + "\n" + net);
+    m_tipsLabel->setText(startup + "\n" + uptime + "\n" + cusage + "\n" + mem + "\n" +gpu_tips + "\n" +gpu_mem_tips + "\n" + net);
     m_centralWidget->text = netspeed;
     m_centralWidget->mp = mp;
     m_centralWidget->cp = cp;
+    m_centralWidget->gp = gpu_usage;
+    m_centralWidget->gmp = gpu_mem;
     m_centralWidget->update();
 
 }

@@ -14,6 +14,8 @@ public:
     void setEnabled(const bool b);
     QString text;
     int mp, cp;
+    // gmp: gpu memory percentage. gp: gpu untilization.
+    int gmp, gp;
 
 signals:
     void requestUpdateGeometry() const;
