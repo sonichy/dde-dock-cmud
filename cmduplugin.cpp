@@ -160,14 +160,14 @@ void CMDUPlugin::invokedMenuItem(const QString &itemKey, const QString &menuId, 
 
 void CMDUPlugin::about()
 {
-    QMessageBox aboutMB(QMessageBox::NoIcon, "HTYCMDU 3.11", "[About]\n\nDeepin Linux DDE Dock netspeed plugin.\nAuthor：海天鹰\nE-mail: sonichy@163.com\nSource：https://github.com/sonichy/CMDU_DDE_DOCK");
+    QMessageBox aboutMB(QMessageBox::NoIcon, "HTYCMDU 3.12", "[About]\n\nDeepin Linux DDE Dock netspeed plugin.\nAuthor：海天鹰\nE-mail: sonichy@163.com\nSource：https://github.com/sonichy/CMDU_DDE_DOCK");
     aboutMB.setIconPixmap(QPixmap(":/icon.png"));
     aboutMB.exec();
 }
 
 void CMDUPlugin::changelog()
 {
-    QString s = "Changelog\n\n3.11 (2019-09-25)\nRight menu add [System monitor] to launch deepin-system-monitor.\n\n3.10 (2019-01-10)\n1.Change DDE-Dock API version 1.1 to 1.1.1。\n\n3.9 (2018-12-23)\n1.Use monospace font to fix width.\n\n3.8 (2018-12-14)\n1.Change DDE-Dock API 1.0 version to 1.1.\n\n3.7 (2018-10-12)\n1.Change memory vertial percent line green color to white, change above 90% red background to red line.\n2.Insert bit + monospace font, solve align.\n3.Netspeed unit fix to KB/s.\n\n3.6 (2018-07-30)\n1.Add memory vertical percent line and CPU usage percent vertical line.\n\n3.5 (2018-06-25)\n1.Add boot analyze and boot record.\n\n3.4 (2018-06-03)\n1.Support dock reorder.\n\n3.3 (2018-05-17)\n1.Turn to red background when memory percent over 90%.\n2.Netspeed <999 bytes to 0.00 KB.\n3.Use safty QString.right() replace QStringList.at(), \"ms\" replace \"毫秒\".\n\n3.2 (2018-05-08)\nCalculate all net speed line, no need to choose line.\nRemove startup float window.\n\n3.1 (2018-03-17)\nModigfy free memory algorithm.\n\n3.0 (2018-02-25)\nModify from dock plugin source code, solve right click crash and switch.\n\n2.4 (2017-11-11)\nAdd boot duration.\n\n2.3 (2017-09-05)\nAuto get current netspeed line.\n\n2.２ (2017-07-08)\n1.Set current netspeed line.\n\n2.1 (2017-02-01)\n1.Upload and download support GB, int parameter change to long, solve bytes unit convert overflow.\n\n2.0 (2016-12-07)\n1.Add right click menu.\n\n1.0 (2016-11-01)\n1.Change Qt program to DDE-DOCK.";
+    QString s = "Changelog\n\n3.12 (2023-03-07)\nRemove fix net speed unit KB.\nImprove to 3 digit number.\n\n3.11 (2019-09-25)\nRight menu add [System monitor] to launch deepin-system-monitor.\n\n3.10 (2019-01-10)\n1.Change DDE-Dock API version 1.1 to 1.1.1。\n\n3.9 (2018-12-23)\n1.Use monospace font to fix width.\n\n3.8 (2018-12-14)\n1.Change DDE-Dock API 1.0 version to 1.1.\n\n3.7 (2018-10-12)\n1.Change memory vertial percent line green color to white, change above 90% red background to red line.\n2.Insert bit + monospace font, solve align.\n3.Netspeed unit fix to KB/s.\n\n3.6 (2018-07-30)\n1.Add memory vertical percent line and CPU usage percent vertical line.\n\n3.5 (2018-06-25)\n1.Add boot analyze and boot record.\n\n3.4 (2018-06-03)\n1.Support dock reorder.\n\n3.3 (2018-05-17)\n1.Turn to red background when memory percent over 90%.\n2.Netspeed <999 bytes to 0.00 KB.\n3.Use safty QString.right() replace QStringList.at(), \"ms\" replace \"毫秒\".\n\n3.2 (2018-05-08)\nCalculate all net speed line, no need to choose line.\nRemove startup float window.\n\n3.1 (2018-03-17)\nModigfy free memory algorithm.\n\n3.0 (2018-02-25)\nModify from dock plugin source code, solve right click crash and switch.\n\n2.4 (2017-11-11)\nAdd boot duration.\n\n2.3 (2017-09-05)\nAuto get current netspeed line.\n\n2.２ (2017-07-08)\n1.Set current netspeed line.\n\n2.1 (2017-02-01)\n1.Upload and download support GB, int parameter change to long, solve bytes unit convert overflow.\n\n2.0 (2016-12-07)\n1.Add right click menu.\n\n1.0 (2016-11-01)\n1.Change Qt program to DDE-DOCK.";
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle("HTYCMDU");
     dialog->setFixedSize(400,300);
@@ -185,7 +185,7 @@ void CMDUPlugin::changelog()
     dialog->setLayout(vbox);
     dialog->show();
     connect(pushbutton_confirm, SIGNAL(clicked()), dialog, SLOT(accept()));
-    if(dialog->exec() == QDialog::Accepted){
+    if (dialog->exec() == QDialog::Accepted) {
         dialog->close();
     }
 }
@@ -193,12 +193,12 @@ void CMDUPlugin::changelog()
 QString CMDUPlugin::KB(long k)
 {
     QString s = "";
-    if(k > 999999){
+    if (k > 999999) {
         s = QString::number(k/(1024*1024.0),'f',2) + "GB";
-    }else{
-        if(k > 999){
+    } else {
+        if (k > 999) {
             s = QString::number(k/1024.0,'f',2) + "MB";
-        }else{
+        } else {
             s = QString::number(k/1.0,'f',2) + "KB";
         }
     }
@@ -208,19 +208,39 @@ QString CMDUPlugin::KB(long k)
 QString CMDUPlugin::BS(long b)
 {
     QString s = "";
-    if(b > 999999999){
-        //s = QString("%1").arg(b/(1024*1024*1024.0), 6, 'f', 2, QLatin1Char(' ')) + "GB";
-        s = QString::number(b/(1024*1024*1024.0), 'f', 2) + "GB";
-    }else{
-        if(b > 999999){
-            //s = QString("%1").arg(b/(1024*1024.0), 6, 'f', 2, QLatin1Char(' ')) + "MB";
-            s = QString::number(b/(1024*1024.0), 'f', 2) + "MB";
-        }else{
-            if(b>999){
-                //s = QString("%1").arg(b/1024.0, 6, 'f', 2, QLatin1Char(' ')) + "KB";
-                s = QString::number(b/(1024.0), 'f',2) + "KB";
-            }else{
-                s = b + "B";
+    if (b > 999999999) {
+        float f = b / (1024*1024*1024.0);
+        if (f >= 100)
+            s = " " + QString::number(f, 'f', 0) + "GB";
+        else if (f >= 10)
+            s = QString::number(f, 'f', 1) + "GB";
+        else
+            s = QString::number(f, 'f', 2) + "GB";
+    } else {
+        if (b > 999999) {
+            float f = b / (1024*1024.0);
+            if (f >= 100)
+                s = " " + QString::number(f, 'f', 0) + "MB";
+            else if (f >= 10)
+                s = QString::number(f, 'f', 1) + "MB";
+            else
+                s = QString::number(f, 'f', 2) + "MB";
+        } else {
+            if (b > 999) {
+                float f = b / 1024.0;
+                if (f >= 100)
+                    s = " " + QString::number(f, 'f', 0) + "KB";
+                else if (f >= 10)
+                    s = QString::number(f, 'f', 1) + "KB";
+                else
+                    s = QString::number(f, 'f', 2) + "KB";
+            } else {
+                if (b > 100)
+                    s = " " + QString::number(b) + " B";
+                else if (b > 10)
+                    s = "  " + QString::number(b) + " B";
+                else
+                    s = "   " + QString::number(b) + " B";
             }
         }
     }
@@ -273,13 +293,14 @@ void CMDUPlugin::updateCMDU()
     const char *ch;
     ch = ba.constData();
     char cpu[5];
-    long user,nice,sys,idle,iowait,irq,softirq,tt;
-    sscanf(ch,"%s%ld%ld%ld%ld%ld%ld%ld",cpu,&user,&nice,&sys,&idle,&iowait,&irq,&softirq);
+    long user, nice, sys, idle, iowait, irq, softirq, tt;
+    sscanf(ch,"%s%ld%ld%ld%ld%ld%ld%ld", cpu, &user, &nice, &sys, &idle, &iowait, &irq, &softirq);
     tt = user + nice + sys + idle + iowait + irq + softirq;
     file.close();
     QString cusage = "";
     int cp = ((tt-tt0)-(idle-idle0))*100/(tt-tt0);
-    if(i>0) cusage = "CPU: " + QString::number(cp) + "%";
+    if (i > 0)
+        cusage = "CPU: " + QString::number(cp) + "%";
     idle0 = idle;
     tt0 = tt;
 
@@ -289,7 +310,7 @@ void CMDUPlugin::updateCMDU()
     l = file.readLine();
     l = file.readLine();
     dbt1 = ubt1 = 0;
-    while(!file.atEnd()){
+    while (!file.atEnd()) {
         l = file.readLine();
         QStringList list = l.split(QRegExp("\\s{1,}"));
         db = list.at(1).toLong();
@@ -298,21 +319,22 @@ void CMDUPlugin::updateCMDU()
         ubt1 += ub;
     }
     file.close();
-    QString dss = "";
     QString uss = "";
+    QString dss = "";
     if (i > 0) {
-        long ds = dbt1 - dbt0;
         long us = ubt1 - ubt0;
-        dss = NB(ds) + "/s";
-        uss = NB(us) + "/s";
-        dbt0 = dbt1;
+        long ds = dbt1 - dbt0;
+        uss = BS(us) + "/s";
+        dss = BS(ds) + "/s";
         ubt0 = ubt1;
+        dbt0 = dbt1;
     }
     QString netspeed = "↑" + uss + "\n↓" + dss;
     QString net = "UPB: " + BS(ubt1) + "  " + uss + "\nDNB: " + BS(dbt1) + "  " + dss;
 
     i++;
-    if (i>2) i = 2;
+    if (i>2)
+        i = 2;
 
     // draw
     m_tipsLabel->setText(startup + "\n" + uptime + "\n" + cusage + "\n" + mem + "\n" + net);
@@ -320,7 +342,6 @@ void CMDUPlugin::updateCMDU()
     m_centralWidget->mp = mp;
     m_centralWidget->cp = cp;
     m_centralWidget->update();
-
 }
 
 void CMDUPlugin::bootRecord()
@@ -346,7 +367,7 @@ void CMDUPlugin::bootRecord()
     dialog->setLayout(vbox);
     dialog->show();
     connect(pushButton_confirm, SIGNAL(clicked()), dialog, SLOT(accept()));
-    if(dialog->exec() == QDialog::Accepted){
+    if (dialog->exec() == QDialog::Accepted) {
         dialog->close();
     }
 }
@@ -374,7 +395,7 @@ void CMDUPlugin::bootAnalyze()
     dialog->setLayout(vbox);
     dialog->show();
     connect(pushButton_confirm, SIGNAL(clicked()), dialog, SLOT(accept()));
-    if(dialog->exec() == QDialog::Accepted){
+    if (dialog->exec() == QDialog::Accepted) {
         dialog->close();
     }
 }
